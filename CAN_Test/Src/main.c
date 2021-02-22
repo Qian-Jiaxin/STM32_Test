@@ -30,13 +30,13 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-  CAN_TxHeaderTypeDef CAN_TxHeaderStruct;
-  CAN_RxHeaderTypeDef CAN_RxHeaderStruct;
-  CAN_FilterTypeDef CAN_FilterStruct;
+CAN_TxHeaderTypeDef CAN_TxHeaderStruct;
+CAN_RxHeaderTypeDef CAN_RxHeaderStruct;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -103,7 +103,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    HAL_CAN_AddTxMessage(&hcan1, &CAN_TxHeaderStruct, TxBuffer, &Tx_MailBox);
+    HAL_CAN_AddTxMessage(&hcanHandle, &CAN_TxHeaderStruct, TxBuffer, &Tx_MailBox);
     HAL_Delay(500);
     // HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &CAN_RxHeaderStruct, RxBuffer);
   }

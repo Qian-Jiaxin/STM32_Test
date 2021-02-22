@@ -58,7 +58,7 @@ uint8_t Buffer[100];
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern CAN_HandleTypeDef hcan1;
+extern CAN_HandleTypeDef hcanHandle;
 extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
 
@@ -210,7 +210,7 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
   /* USER CODE BEGIN USB_LP_CAN1_RX0_IRQn 0 */
 
   /* USER CODE END USB_LP_CAN1_RX0_IRQn 0 */
-  HAL_CAN_IRQHandler(&hcan1);
+  HAL_CAN_IRQHandler(&hcanHandle);
   /* USER CODE BEGIN USB_LP_CAN1_RX0_IRQn 1 */
 
   /* USER CODE END USB_LP_CAN1_RX0_IRQn 1 */
@@ -224,7 +224,7 @@ void CAN1_RX1_IRQHandler(void)
   /* USER CODE BEGIN CAN1_RX1_IRQn 0 */
 
   /* USER CODE END CAN1_RX1_IRQn 0 */
-  HAL_CAN_IRQHandler(&hcan1);
+  HAL_CAN_IRQHandler(&hcanHandle);
   /* USER CODE BEGIN CAN1_RX1_IRQn 1 */
 
   /* USER CODE END CAN1_RX1_IRQn 1 */
@@ -238,7 +238,7 @@ void CAN1_SCE_IRQHandler(void)
   /* USER CODE BEGIN CAN1_SCE_IRQn 0 */
 
   /* USER CODE END CAN1_SCE_IRQn 0 */
-  HAL_CAN_IRQHandler(&hcan1);
+  HAL_CAN_IRQHandler(&hcanHandle);
   /* USER CODE BEGIN CAN1_SCE_IRQn 1 */
 
   /* USER CODE END CAN1_SCE_IRQn 1 */
@@ -266,7 +266,7 @@ void USART2_IRQHandler(void)
 			__HAL_UART_CLEAR_IDLEFLAG(&huart2);
 		}
   /* USER CODE END USART2_IRQn 0 */
-  // HAL_UART_IRQHandler(&huart2);
+//  HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
 
   /* USER CODE END USART2_IRQn 1 */
