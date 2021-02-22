@@ -213,22 +213,23 @@ void CAN1_SCE_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-  if(__HAL_UART_GET_FLAG(&huart2, UART_IT_RXNE) != RESET)
+  if(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_RXNE) != RESET)
   {
     UART_Rx_Buffer[UART_Rx_Count++] = USART2->DR;
     if(UART_Rx_Count == 100)
       UART_Rx_Count = 0;
-    __HAL_UART_CLEAR_FLAG(&huart2, UART_IT_RXNE);
+		__HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_RXNE);
+
   }
-  if(__HAL_UART_GET_FLAG(&huart2, UART_IT_IDLE) != RESET)
+  if(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE) != RESET)
   {
-    __HAL_UART_CLEAR_IDLEFLAG(&huart2);
-    HAL_UART_Transmit(&huart2, UART_Rx_Buffer, UART_Rx_Count+1, UART_Tx_TIMEOUT);
-    memset(UART_Rx_Buffer, 0, UART_Rx_Count+1);
+    HAL_UART_Transmit(&huart2, UART_Rx_Buffer, UART_Rx_Count, UART_Tx_TIMEOUT);
+    memset(UART_Rx_Buffer, 0, UART_Rx_Count);
     UART_Rx_Count = 0;
+		__HAL_UART_CLEAR_IDLEFLAG(&huart2);
   }
   /* USER CODE END USART2_IRQn 0 */
-  HAL_UART_IRQHandler(&huart2);
+//  HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
 
   /* USER CODE END USART2_IRQn 1 */
