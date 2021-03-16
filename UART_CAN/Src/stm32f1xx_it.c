@@ -23,6 +23,8 @@
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <string.h>
+#include "cmsis_os2.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +44,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+uint8_t UART_Count = 0;
+uint8_t UART_Rec[500] = {0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,7 +64,8 @@ extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim7;
 
 /* USER CODE BEGIN EV */
-
+extern osMessageQueueId_t Queue_UARTHandle;
+extern osMessageQueueId_t Queue_CANHandle;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -196,10 +200,30 @@ void CAN1_SCE_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
-
+  uint8_t i;
+  uint8_t queue_data[10]={0};
   /* USER CODE END USART2_IRQn 0 */
-  HAL_UART_IRQHandler(&huart2);
+  // HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
+  if(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_RXNE) != RESET)
+  {
+    UART_Rec[UART_Count++] = USART2->DR;
+    if(UART_Count == 500)
+      UART_Count = 0;
+    __HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_RXNE);
+  }
+  else if(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE) != RESET)
+  {
+    __HAL_UART_CLEAR_FLAG(&huart2, UART_FLAG_IDLE);
+    //node_id:2   data_num:8
+    for(i = 0; i < UART_Count/10; i+=10)
+    {
+      memcpy(queue_data, &UART_Rec[i], 10);
+      osMessageQueuePut(Queue_UARTHandle, queue_data, 0, 0);
+    }
+    memset(UART_Rec, 0 , sizeof(UART_Rec));
+    UART_Count = 0;
+  }
 
   /* USER CODE END USART2_IRQn 1 */
 }

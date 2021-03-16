@@ -19,11 +19,15 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
+// #include "cmsis_os.h"
+#include "can.h"
+#include "usart.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
+#include "cmsis_os2.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,54 +45,14 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-CAN_HandleTypeDef hcan;
 
-UART_HandleTypeDef huart2;
-
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .priority = (osPriority_t) osPriorityLow,
-  .stack_size = 128 * 4
-};
-/* Definitions for Task_UART2CAN */
-osThreadId_t Task_UART2CANHandle;
-const osThreadAttr_t Task_UART2CAN_attributes = {
-  .name = "Task_UART2CAN",
-  .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 4
-};
-/* Definitions for Task_CAN2UART */
-osThreadId_t Task_CAN2UARTHandle;
-const osThreadAttr_t Task_CAN2UART_attributes = {
-  .name = "Task_CAN2UART",
-  .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 4
-};
-/* Definitions for Queue_CAN */
-osMessageQueueId_t Queue_CANHandle;
-const osMessageQueueAttr_t Queue_CAN_attributes = {
-  .name = "Queue_CAN"
-};
-/* Definitions for Queue_UART */
-osMessageQueueId_t Queue_UARTHandle;
-const osMessageQueueAttr_t Queue_UART_attributes = {
-  .name = "Queue_UART"
-};
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_CAN_Init(void);
-static void MX_USART2_UART_Init(void);
-void StartDefaultTask(void *argument);
-void StartTask_UART2CAN(void *argument);
-void StartTask_CAN2UART(void *argument);
-
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -133,49 +97,8 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Init scheduler */
-  osKernelInitialize();
-
-  /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
-
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
-  /* USER CODE END RTOS_SEMAPHORES */
-
-  /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
-  /* USER CODE END RTOS_TIMERS */
-
-  /* Create the queue(s) */
-  /* creation of Queue_CAN */
-  Queue_CANHandle = osMessageQueueNew (8, sizeof(uint8_t), &Queue_CAN_attributes);
-
-  /* creation of Queue_UART */
-  Queue_UARTHandle = osMessageQueueNew (8, sizeof(uint8_t), &Queue_UART_attributes);
-
-  /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
-  /* USER CODE END RTOS_QUEUES */
-
-  /* Create the thread(s) */
-  /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
-
-  /* creation of Task_UART2CAN */
-  Task_UART2CANHandle = osThreadNew(StartTask_UART2CAN, NULL, &Task_UART2CAN_attributes);
-
-  /* creation of Task_CAN2UART */
-  Task_CAN2UARTHandle = osThreadNew(StartTask_CAN2UART, NULL, &Task_CAN2UART_attributes);
-
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
-  /* USER CODE END RTOS_THREADS */
-
-  /* USER CODE BEGIN RTOS_EVENTS */
-  /* add events, ... */
-  /* USER CODE END RTOS_EVENTS */
-
+  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  MX_FREERTOS_Init();
   /* Start scheduler */
   osKernelStart();
 
@@ -228,147 +151,9 @@ void SystemClock_Config(void)
   }
 }
 
-/**
-  * @brief CAN Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_CAN_Init(void)
-{
-
-  /* USER CODE BEGIN CAN_Init 0 */
-
-  /* USER CODE END CAN_Init 0 */
-
-  /* USER CODE BEGIN CAN_Init 1 */
-
-  /* USER CODE END CAN_Init 1 */
-  hcan.Instance = CAN1;
-  hcan.Init.Prescaler = 2;
-  hcan.Init.Mode = CAN_MODE_NORMAL;
-  hcan.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan.Init.TimeSeg1 = CAN_BS1_13TQ;
-  hcan.Init.TimeSeg2 = CAN_BS2_2TQ;
-  hcan.Init.TimeTriggeredMode = DISABLE;
-  hcan.Init.AutoBusOff = DISABLE;
-  hcan.Init.AutoWakeUp = DISABLE;
-  hcan.Init.AutoRetransmission = ENABLE;
-  hcan.Init.ReceiveFifoLocked = DISABLE;
-  hcan.Init.TransmitFifoPriority = DISABLE;
-  if (HAL_CAN_Init(&hcan) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN CAN_Init 2 */
-
-  /* USER CODE END CAN_Init 2 */
-
-}
-
-/**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART2_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
-
-}
-
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-
-}
-
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
-
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
-{
-  /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END 5 */
-}
-
-/* USER CODE BEGIN Header_StartTask_UART2CAN */
-/**
-* @brief Function implementing the Task_UART2CAN thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask_UART2CAN */
-void StartTask_UART2CAN(void *argument)
-{
-  /* USER CODE BEGIN StartTask_UART2CAN */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END StartTask_UART2CAN */
-}
-
-/* USER CODE BEGIN Header_StartTask_CAN2UART */
-/**
-* @brief Function implementing the Task_CAN2UART thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask_CAN2UART */
-void StartTask_CAN2UART(void *argument)
-{
-  /* USER CODE BEGIN StartTask_CAN2UART */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END StartTask_CAN2UART */
-}
 
  /**
   * @brief  Period elapsed callback in non blocking mode
