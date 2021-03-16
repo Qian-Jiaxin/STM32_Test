@@ -130,50 +130,50 @@ void myCAN_Init(void)
   CAN_FilterTypeDef CAN_FilterStruct;
   CAN_FilterStruct.FilterBank = 0;
   CAN_FilterStruct.FilterFIFOAssignment = CAN_FILTER_FIFO0;
-  CAN_FilterStruct.FilterIdHigh = 0x0001<<5;
-  CAN_FilterStruct.FilterIdLow = 0x0002<<5;
-  CAN_FilterStruct.FilterMaskIdHigh = 0x0003<<5;
-  CAN_FilterStruct.FilterMaskIdLow = 0x0004<<5;
+  CAN_FilterStruct.FilterIdHigh = 0x142<<5;
+  CAN_FilterStruct.FilterIdLow = 0x143<<5;
+  // CAN_FilterStruct.FilterMaskIdHigh = 0x003<<5;
+  // CAN_FilterStruct.FilterMaskIdLow = 0x004<<5;
   // CAN_FilterStruct.SlaveStartFilterBank = 3;
   CAN_FilterStruct.FilterMode = CAN_FILTERMODE_IDLIST;
   CAN_FilterStruct.FilterScale = CAN_FILTERSCALE_16BIT;
   CAN_FilterStruct.FilterActivation = CAN_FILTER_ENABLE;
   HAL_CAN_ConfigFilter(&hcanHandle, &CAN_FilterStruct);
 
-  CAN_FilterStruct.FilterBank = 1;
-  CAN_FilterStruct.FilterFIFOAssignment = CAN_FILTER_FIFO1;
-  CAN_FilterStruct.FilterIdHigh = 0x0005<<5;
-  CAN_FilterStruct.FilterIdLow = 0x0006<<5;
-  CAN_FilterStruct.FilterMaskIdHigh = 0x0007<<5;
-  CAN_FilterStruct.FilterMaskIdLow = 0x0008<<5;
+  // CAN_FilterStruct.FilterBank = 1;
+  // CAN_FilterStruct.FilterFIFOAssignment = CAN_FILTER_FIFO1;
+  // CAN_FilterStruct.FilterIdHigh = 0x0005<<5;
+  // CAN_FilterStruct.FilterIdLow = 0x0006<<5;
+  // CAN_FilterStruct.FilterMaskIdHigh = 0x0007<<5;
+  // CAN_FilterStruct.FilterMaskIdLow = 0x0008<<5;
   // CAN_FilterStruct.SlaveStartFilterBank = 3;
-  CAN_FilterStruct.FilterMode = CAN_FILTERMODE_IDLIST;
-  CAN_FilterStruct.FilterScale = CAN_FILTERSCALE_16BIT;
-  CAN_FilterStruct.FilterActivation = CAN_FILTER_ENABLE;
-  HAL_CAN_ConfigFilter(&hcanHandle, &CAN_FilterStruct);
+  // CAN_FilterStruct.FilterMode = CAN_FILTERMODE_IDLIST;
+  // CAN_FilterStruct.FilterScale = CAN_FILTERSCALE_16BIT;
+  // CAN_FilterStruct.FilterActivation = CAN_FILTER_ENABLE;
+  // HAL_CAN_ConfigFilter(&hcanHandle, &CAN_FilterStruct);
 
   HAL_CAN_ActivateNotification(&hcanHandle, CAN_IT_RX_FIFO0_MSG_PENDING);
-  HAL_CAN_ActivateNotification(&hcanHandle, CAN_IT_RX_FIFO1_MSG_PENDING);
-	HAL_CAN_ActivateNotification(&hcanHandle, CAN_IT_RX_FIFO0_FULL);
-  HAL_CAN_ActivateNotification(&hcanHandle, CAN_IT_RX_FIFO1_FULL);
+  // HAL_CAN_ActivateNotification(&hcanHandle, CAN_IT_RX_FIFO1_MSG_PENDING);
+	// HAL_CAN_ActivateNotification(&hcanHandle, CAN_IT_RX_FIFO0_FULL);
+  // HAL_CAN_ActivateNotification(&hcanHandle, CAN_IT_RX_FIFO1_FULL);
 
   HAL_CAN_Start(&hcanHandle);
 }
 
-void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
-{
-  extern uint8_t RxBuffer[8];
-  extern CAN_RxHeaderTypeDef CAN_RxHeaderStruct;
-	if(hcan == &hcanHandle)
-	{
-		if(HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO1, &CAN_RxHeaderStruct, RxBuffer) == HAL_OK)
-		{
-			
-		}
-		HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO1_MSG_PENDING);	
-	}
-
-}
+// void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
+// {
+  // extern uint8_t RxBuffer[8];
+  // extern CAN_RxHeaderTypeDef CAN_RxHeaderStruct;
+	// if(hcan == &hcanHandle)
+	// {
+		// if(HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO1, &CAN_RxHeaderStruct, RxBuffer) == HAL_OK)
+		// {
+			// 
+		// }
+		// HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO1_MSG_PENDING);	
+	// }
+// 
+// }
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
   extern uint8_t RxBuffer[8];
@@ -187,22 +187,22 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 		HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO0_MSG_PENDING);
 	}
 }
-void HAL_CAN_RxFifo1FullCallback(CAN_HandleTypeDef *hcan)
-{
-	if(hcan == &hcanHandle)
-	{
-		
-		HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO1_FULL);
-	}
-}
-void HAL_CAN_RxFifo0FullCallback(CAN_HandleTypeDef *hcan)
-{
-	if(hcan == &hcanHandle)
-	{
-		
-		HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO0_FULL);
-	}
-}
+// void HAL_CAN_RxFifo1FullCallback(CAN_HandleTypeDef *hcan)
+// {
+	// if(hcan == &hcanHandle)
+	// {
+		// 
+		// HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO1_FULL);
+	// }
+// }
+// void HAL_CAN_RxFifo0FullCallback(CAN_HandleTypeDef *hcan)
+// {
+	// if(hcan == &hcanHandle)
+	// {
+		// 
+		// HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO0_FULL);
+	// }
+// }
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

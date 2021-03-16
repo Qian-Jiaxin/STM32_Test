@@ -50,6 +50,8 @@
 /* USER CODE END Variables */
 osThreadId Task_CANtoUARTHandle;
 osThreadId Task_UARTtoCANHandle;
+osMessageQId Queue_CANtoUARTHandle;
+osMessageQId Queue_UARTtoCANHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -99,6 +101,15 @@ void MX_FREERTOS_Init(void) {
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* definition and creation of Queue_CANtoUART */
+  osMessageQDef(Queue_CANtoUART, 48, uint8_t);
+  Queue_CANtoUARTHandle = osMessageCreate(osMessageQ(Queue_CANtoUART), NULL);
+
+  /* definition and creation of Queue_UARTtoCAN */
+  osMessageQDef(Queue_UARTtoCAN, 100, uint8_t);
+  Queue_UARTtoCANHandle = osMessageCreate(osMessageQ(Queue_UARTtoCAN), NULL);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -128,10 +139,17 @@ void MX_FREERTOS_Init(void) {
 void StartTask_CANtoUART(void const * argument)
 {
   /* USER CODE BEGIN StartTask_CANtoUART */
+  osEvent event_CANtoUART;
+  uint8_t *p = NULL;
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
+    event_CANtoUART = osMessageGet(Queue_CANtoUARTHandle, osWaitForever);
+    if(event_CANtoUART.status == osEventMessage)
+    {
+      p = (uint8_t *)event_CANtoUART.value.p;
+    }
   }
   /* USER CODE END StartTask_CANtoUART */
 }
@@ -146,10 +164,16 @@ void StartTask_CANtoUART(void const * argument)
 void StartTask_UARTtoCAN(void const * argument)
 {
   /* USER CODE BEGIN StartTask_UARTtoCAN */
+  osEvent event_UARTtoCAN;
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
+    event_UARTtoCAN = osMessageGet(Queue_UARTtoCANHandle, osWaitForever);
+    if(event_UARTtoCAN.status == osEventMessage)
+    {
+
+    }
   }
   /* USER CODE END StartTask_UARTtoCAN */
 }

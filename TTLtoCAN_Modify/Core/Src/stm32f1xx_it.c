@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <string.h>
+#include "cmsis_os.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,6 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 uint8_t UART_Rx_Buffer[100] = {0};
+uint8_t UART_Rx_Buffer_Mes[101] = {0};
 uint8_t UART_Rx_Count = 0;
 CAN_Rx_t CAN_Rx[100] = {0};
 /* USER CODE END PV */
@@ -64,7 +66,8 @@ extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim7;
 
 /* USER CODE BEGIN EV */
-
+extern osMessageQId Queue_CANtoUARTHandle;
+extern osMessageQId Queue_UARTtoCANHandle;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -223,13 +226,16 @@ void USART2_IRQHandler(void)
   }
   if(__HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE) != RESET)
   {
-    HAL_UART_Transmit(&huart2, UART_Rx_Buffer, UART_Rx_Count, UART_Tx_TIMEOUT);
+    // HAL_UART_Transmit(&huart2, UART_Rx_Buffer, UART_Rx_Count, UART_Tx_TIMEOUT);
+    memcpy(&UART_Rx_Buffer_Mes[1], &UART_Rx_Buffer, UART_Rx_Count);
+    UART_Rx_Buffer_Mes[0] = UART_Rx_Count;
+    osMessagePut(Queue_UARTtoCANHandle, (uint32_t)UART_Rx_Buffer_Mes, osMessageput_TIMEOUT);
     memset(UART_Rx_Buffer, 0, UART_Rx_Count);
     UART_Rx_Count = 0;
 		__HAL_UART_CLEAR_IDLEFLAG(&huart2);
   }
   /* USER CODE END USART2_IRQn 0 */
-//  HAL_UART_IRQHandler(&huart2);
+  HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
 
   /* USER CODE END USART2_IRQn 1 */

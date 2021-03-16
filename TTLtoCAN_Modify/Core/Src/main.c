@@ -46,7 +46,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+CAN_TxHeaderTypeDef CAN_TxHeader;
+CAN_RxHeaderTypeDef CAN_RxHeader1, CAN_RxHeader2;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -92,7 +93,7 @@ int main(void)
   MX_CAN_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_CAN_Start(&hcan);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

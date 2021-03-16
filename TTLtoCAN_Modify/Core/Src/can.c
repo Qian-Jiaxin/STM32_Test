@@ -117,7 +117,34 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 }
 
 /* USER CODE BEGIN 1 */
+void CAN_Filter_Setup(void)
+{
+  CAN_FilterTypeDef CAN_FilterStruct;
+  CAN_FilterStruct.FilterMode = CAN_FILTERMODE_IDMASK;
+  CAN_FilterStruct.FilterScale = CAN_FILTERSCALE_16BIT;
+  CAN_FilterStruct.FilterBank = 0;
+  CAN_FilterStruct.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+  CAN_FilterStruct.FilterMaskIdHigh = 0x0;
+  CAN_FilterStruct.FilterMaskIdLow = 0x0;
+  HAL_CAN_ConfigFilter(&hcan, &CAN_FilterStruct);
 
+  HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING);
+  HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO1_MSG_PENDING);
+}
+
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+  uint8_t RxData[8];
+  extern CAN_RxHeaderTypeDef CAN_RxHeader1;
+  HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN_RxHeader1, RxData);
+}
+
+void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+  uint8_t RxData[8];
+  extern CAN_RxHeaderTypeDef CAN_RxHeader2;
+  HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO1, &CAN_RxHeader2, RxData);
+}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

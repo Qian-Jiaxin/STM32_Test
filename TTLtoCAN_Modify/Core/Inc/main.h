@@ -65,6 +65,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 /* USER CODE BEGIN Private defines */
 #define UART_Tx_TIMEOUT 100
+#define CAN_Tx_TIMEOUT  100
+#define osMessageput_TIMEOUT  50
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
