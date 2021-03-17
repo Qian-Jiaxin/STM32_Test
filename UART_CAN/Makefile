@@ -69,7 +69,8 @@ Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.c \
 Src/gpio.c \
 Src/can.c \
-Src/usart.c
+Src/usart.c	\
+Src/slip_exchange.c
 
 # ASM sources
 ASM_SOURCES =  \

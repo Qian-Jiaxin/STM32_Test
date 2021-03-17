@@ -174,7 +174,7 @@ void StartDefaultTask(void *argument)
 void StartTask_UART2CAN(void *argument)
 {
   /* USER CODE BEGIN StartTask_UART2CAN */
-  slip_can_tx_t slip_can_tx;
+  slip_decode_t slip_decode;
   uint8_t queue_rec[10] = {0};
   /* Infinite loop */
   for(;;)
@@ -182,9 +182,11 @@ void StartTask_UART2CAN(void *argument)
     osDelay(1);
     if(osMessageQueueGet(Queue_UARTHandle, queue_rec, NULL, osWaitForever) == osOK)
     {
-      slip_can_tx.node_id = (uint16_t)(queue_rec[0]<<8)|queue_rec[1];
-      memcpy(&slip_can_tx.tx_data, &queue_rec[2], 8);
-      uart_to_can(&slip_can_tx);
+      memcpy(&slip_decode.uart_array, queue_rec, 10);
+      if(uart_to_can(&slip_decode) == -1)
+      {
+        //TODO
+      }
     }
   }
   /* USER CODE END StartTask_UART2CAN */

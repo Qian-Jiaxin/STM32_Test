@@ -10,24 +10,20 @@ extern "C" {
 #include "usart.h"
 #include "cmsis_os2.h"
 
-
 typedef struct 
 {
     uint16_t node_id;
-    uint32_t *tx_mailbox;
-    uint8_t tx_data[8];
-}slip_can_tx_t;
+    uint8_t can_array[8];
+}can_info_t;
 
-typedef struct 
+typedef union 
 {
-
-}slip_uart_tx_t;
-
-
-int uart_to_can(const slip_can_tx_t *slip_can_tx);
+    can_info_t can_info;
+    uint8_t uart_array[10];
+}slip_decode_t;
 
 
-
+int uart_to_can(slip_decode_t *slip_decode);
 
 
 #ifdef __cplusplus
