@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include <string.h>
 #include "cmsis_os2.h"
+#include "slip_exchange.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -173,7 +174,7 @@ void StartDefaultTask(void *argument)
 void StartTask_UART2CAN(void *argument)
 {
   /* USER CODE BEGIN StartTask_UART2CAN */
-  uint8_t node_id = 0;
+  slip_can_tx_t slip_can_tx;
   uint8_t queue_rec[10] = {0};
   /* Infinite loop */
   for(;;)
@@ -181,8 +182,9 @@ void StartTask_UART2CAN(void *argument)
     osDelay(1);
     if(osMessageQueueGet(Queue_UARTHandle, queue_rec, NULL, osWaitForever) == osOK)
     {
-      node_id = (queue_rec[0]<<8)|queue_rec[1];
-
+      slip_can_tx.node_id = (uint16_t)(queue_rec[0]<<8)|queue_rec[1];
+      memcpy(&slip_can_tx.tx_data, &queue_rec[2], 8);
+      uart_to_can(&slip_can_tx);
     }
   }
   /* USER CODE END StartTask_UART2CAN */

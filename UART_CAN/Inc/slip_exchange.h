@@ -24,6 +24,7 @@ typedef struct
 }slip_uart_tx_t;
 
 
+int uart_to_can(const slip_can_tx_t *slip_can_tx);
 
 
 
